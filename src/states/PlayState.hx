@@ -36,8 +36,8 @@ class PlayState extends State {
 
     function assets_loaded(_) {
 
-        create_player();
         create_stars();
+        create_player();
 
     } //assets_loaded
 
@@ -53,6 +53,9 @@ class PlayState extends State {
 
     override function update(dt:Float) {
 
+        if(player_ship != null) {
+            Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
+        }
 
     } //update
 
@@ -61,8 +64,10 @@ class PlayState extends State {
         player_ship = new Sprite({
             name : 'player_ship',
             texture : Luxe.resources.texture('assets/blue_ship.png'),
-            pos : Luxe.screen.mid
+            pos : Luxe.screen.mid,
+            depth : 0
         });
+        player_ship.add(new ShipBrain('ship_brain'));
 
     } //create_player
 
@@ -71,13 +76,16 @@ class PlayState extends State {
         var stars : Array<Sprite> = [];
         for(i in 0...100) {
             var star = new Sprite({
-            name : 'star',
-            name_unique : true,
-            texture : Luxe.resources.texture('assets/star.png'),
-            pos : new Vector(Luxe.utils.random.int(0, Luxe.screen.w), Luxe.utils.random.int(0, Luxe.screen.h))
-        });
+                name : 'star',
+                name_unique : true,
+                texture : Luxe.resources.texture('assets/star.png'),
+                pos : new Vector(Luxe.utils.random.int(0, Luxe.screen.w), Luxe.utils.random.int(0, Luxe.screen.h)),
+                depth : -1
+            });
         stars.push(star);
-        }
+        } //for loop
+        //todo: more stars when camera moves
+        //todo: cleanup far away stars
 
     } //create_stars
 
