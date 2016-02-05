@@ -1,5 +1,5 @@
 mobile_space - made with luxe engine
 
-To compile, visit [luxeengine.org](http://luxeengine.org) and follow the setup instructions.
+To compile, visit [luxeengine.com](http://luxeengine.com) and follow the setup instructions.
 
 Additional dependencies: *none yet*

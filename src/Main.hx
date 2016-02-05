@@ -1,7 +1,6 @@
+import states.*;
 import luxe.Input;
 import luxe.States;
-
-import states.*;
 
 class Main extends luxe.Game {
 
@@ -20,7 +19,7 @@ class Main extends luxe.Game {
         machine.add(new MenuState('menu_state'));
         machine.add(new PlayState('play_state'));
         Luxe.on(init, function(_) {
-            machine.set('menu_state');
+            machine.set('play_state');
         });
 
     } //ready
