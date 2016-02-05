@@ -1,6 +1,8 @@
 import luxe.Input;
 import luxe.States;
 
+import states.*;
+
 class Main extends luxe.Game {
 
     var machine : States;

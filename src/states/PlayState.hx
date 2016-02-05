@@ -1,3 +1,4 @@
+package states;
 import luxe.States;
 
 class PlayState extends State {
