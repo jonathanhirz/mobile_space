@@ -7,8 +7,9 @@ class ShipBrain extends Component {
 
     var ship : Sprite;
     var ship_velocity : Vector = new Vector(0,0);
+    var ship_velocity_max : Float = 10;
     var ship_acceleration : Vector = new Vector(0,0);
-    var ship_speed : Float = 1;
+    var ship_speed : Float = 1.5;
 
     public function new(_name:String) {
         super({ name:_name});
@@ -22,12 +23,17 @@ class ShipBrain extends Component {
 
     override function update(dt:Float) {
 
-        //todo: CLAMPS
         ship_velocity.add(ship_acceleration);
+        ship_velocity.x = luxe.utils.Maths.clamp(ship_velocity.x, -ship_velocity_max, ship_velocity_max);
+        ship_velocity.y = luxe.utils.Maths.clamp(ship_velocity.y, -ship_velocity_max, ship_velocity_max);
         pos.add(ship_velocity);
-        ship_velocity.multiply(new Vector(0.85, 0.85));
-        ship.rotation_z = Math.atan2(ship_velocity.y, ship_velocity.x) * (180/Math.PI) + 90;
-        //todo: engine exhaust
+        ship_velocity.multiply(new Vector(0.99, 0.99));
+        // if(Math.abs(ship_velocity.x) < 0.0005) ship_velocity.x = 0;
+        // if(Math.abs(ship_velocity.y) < 0.0005) ship_velocity.y = 0;
+        if(ship_velocity.x != 0 || ship_velocity.y != 0) {
+            ship.rotation_z = Math.atan2(ship_velocity.y, ship_velocity.x) * (180/Math.PI) + 90;
+        }
+        //todo: engine exhaust w/ PARTICLESH
 
         //====KEY CONTROLS====
         if(Luxe.input.inputdown('up')) {

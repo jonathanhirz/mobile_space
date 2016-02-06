@@ -36,7 +36,7 @@ class PlayState extends State {
 
     function assets_loaded(_) {
 
-        create_stars();
+        create_stars(100, new Vector(0,0));
         create_player();
 
     } //assets_loaded
@@ -71,9 +71,10 @@ class PlayState extends State {
 
     } //create_player
 
-    function create_stars() {
+    function create_stars(_number_of_stars:Int, _in_sector:Vector) {
 
         var stars : Array<Sprite> = [];
+        Luxe.utils.random.initial = 42;
         for(i in 0...100) {
             var star = new Sprite({
                 name : 'star',
@@ -84,7 +85,8 @@ class PlayState extends State {
             });
         stars.push(star);
         } //for loop
-        //todo: more stars when camera moves
+
+        //todo: define unique sectors based on screen size and position, fill grid of 9 around player. add more as player moves
         //todo: cleanup far away stars
 
     } //create_stars
