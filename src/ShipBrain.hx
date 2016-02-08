@@ -33,9 +33,6 @@ class ShipBrain extends Component {
         if(ship_velocity.x != 0 || ship_velocity.y != 0) {
             ship.rotation_z = Math.atan2(ship_velocity.y, ship_velocity.x) * (180/Math.PI) + 90;
         }
-
-        trace(Math.floor(pos.x / Luxe.screen.w), Math.floor(pos.y / Luxe.screen.h));
-
         //todo: engine exhaust w/ PARTICLESH
 
         //====KEY CONTROLS====
@@ -63,20 +60,13 @@ class ShipBrain extends Component {
         if(Luxe.input.inputreleased('right')) {
             ship_acceleration.x = 0;
         }
-        if(Luxe.input.inputreleased('space')) {
+        if(Luxe.input.inputpressed('space')) {
             ship_velocity = new Vector(0,0);
         }
 
         //====TOUCH CONTROLS====
+        //todo: touch controls
 
     } //update
-
-    function rotate_ship_to(_angle:Float) {
-        //rotation.toeuler() gives the DEGREES of the rotation
-        //rotation.setFromEuler() takes the RADIAN of the rotation
-        Actuate.tween(ship, .1, {rotation_z : _angle} );
-
-
-    } //rotate_ship_to
 
 } //ShipBrain

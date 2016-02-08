@@ -11,14 +11,18 @@ class PlayState extends State {
 
     var player_ship : Sprite;
     var player_ship_component : ShipBrain;
+    var player_ship_sector : Vector = new Vector(0,0);
     var stars : Array<Sprite> = [];
     var current_star : Int = 0;
+    var stars_per_sector : Int = 50;
 
     public function new( _name:String ) {
         super({ name:_name });
     } //new
 
     override function init() {
+
+        // Luxe.camera.zoom = 0.2;
 
         var parcel = new Parcel({
             textures : [
@@ -29,7 +33,7 @@ class PlayState extends State {
 
         new ParcelProgress({
             parcel : parcel,
-            background : new Color().rgb(0x2e2e2e),
+            background : new Color().rgb(0x1a1a1a),
             oncomplete : assets_loaded
         });
 
@@ -39,16 +43,14 @@ class PlayState extends State {
 
     function assets_loaded(_) {
 
-        create_stars(100);
-        place_stars_in_sector(50, 0, 0);
-        place_stars_in_sector(50, 0, 1);
-        place_stars_in_sector(50, 0, -1);
-        place_stars_in_sector(50, 1, 0);
-        place_stars_in_sector(50, 1, 1);
-        place_stars_in_sector(50, 1, -1);
-        place_stars_in_sector(50, -1, -1);
-        place_stars_in_sector(50, -1, 0);
-        place_stars_in_sector(50, -1, 1);
+        // generate pool of stars
+        create_stars(1500);
+        // place the initial 9 sectors of stars around player's initial position
+        for(col in -1...2) {
+            for(row in -1...2) {
+                place_stars_in_sector(stars_per_sector, col, row);
+            }
+        }
         create_player();
         player_ship_component = player_ship.get('ship_brain');
 
@@ -68,19 +70,39 @@ class PlayState extends State {
 
         if(player_ship != null) {
             Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
-            if(player_ship_component.ship_velocity.y < 0) {
 
-            }
-            if(player_ship_component.ship_velocity.y > 0) {
+            var _current_sector = new Vector(Math.floor(player_ship.pos.x / Luxe.screen.w), Math.floor(player_ship.pos.y / Luxe.screen.h));
+            // trace(_current_sector, player_ship_sector);
 
+            //todo: sometimes stars near the player get moved, resulting in empty sectors...
+            if(_current_sector.y < player_ship_sector.y) {
+                //draw stars up
+                for(i in -1...2) {
+                    place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y - 1);
+                }
+                player_ship_sector = _current_sector;
             }
-            if(player_ship_component.ship_velocity.x < 0) {
-
+            if(_current_sector.y > player_ship_sector.y) {
+                //draw stars down
+                for(i in -1...2) {
+                    place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y + 1);
+                }
+                player_ship_sector = _current_sector;
             }
-            if(player_ship_component.ship_velocity.x > 0) {
-
+            if(_current_sector.x < player_ship_sector.x) {
+                //draw stars left
+                for(i in -1...2) {
+                    place_stars_in_sector(stars_per_sector, _current_sector.x - 1, _current_sector.y + i);
+                }
+                player_ship_sector = _current_sector;
             }
-            
+            if(_current_sector.x > player_ship_sector.x) {
+                //draw stars right
+                for(i in -1...2) {
+                    place_stars_in_sector(stars_per_sector, _current_sector.x + 1, _current_sector.y + i);
+                }
+                player_ship_sector = _current_sector;
+            }
         }
 
     } //update
@@ -104,37 +126,24 @@ class PlayState extends State {
                 name : 'star',
                 name_unique : true,
                 texture : Luxe.resources.texture('assets/star.png'),
-                depth : -1
+                depth : -1,
+                visible : false
             });
         stars.push(star);
         } //for loop
 
     } //create_stars
 
-    function place_stars_in_sector(_number_of_stars:Int, _sector_x:Int, _sector_y:Int) {
+    function place_stars_in_sector(_number_of_stars:Int, _sector_x:Float, _sector_y:Float) {
 
         Luxe.utils.random.initial = 42 + _sector_x + _sector_y;
         for(i in 0..._number_of_stars) {
             stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
+            stars[current_star].visible = true;
             current_star++;
             if(current_star > stars.length - 1) current_star = 0;
         } //for loop
 
     } //place_stars_in_sector
-
-    //todo: maybe work on generating a cloud of stars that follows the player around
-    // and when a star moves off camera+some, just move it to the front/moving edge
-    // ...either that, or the sector of stars idea (better, but much more complex)
-    //todo: generate more stars as camera moves
-    function create_more_stars() {
-
-
-    } //create_more_stars
-
-    //todo: cleanup far away stars
-    function clean_up_stars() {
-
-
-    } //clean_up_stars
 
 } //PlayState
