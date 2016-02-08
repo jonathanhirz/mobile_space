@@ -10,6 +10,9 @@ import luxe.ParcelProgress;
 class PlayState extends State {
 
     var player_ship : Sprite;
+    var player_ship_component : ShipBrain;
+    var stars : Array<Sprite> = [];
+    var current_star : Int = 0;
 
     public function new( _name:String ) {
         super({ name:_name });
@@ -36,8 +39,18 @@ class PlayState extends State {
 
     function assets_loaded(_) {
 
-        create_stars(100, new Vector(0,0));
+        create_stars(100);
+        place_stars_in_sector(50, 0, 0);
+        place_stars_in_sector(50, 0, 1);
+        place_stars_in_sector(50, 0, -1);
+        place_stars_in_sector(50, 1, 0);
+        place_stars_in_sector(50, 1, 1);
+        place_stars_in_sector(50, 1, -1);
+        place_stars_in_sector(50, -1, -1);
+        place_stars_in_sector(50, -1, 0);
+        place_stars_in_sector(50, -1, 1);
         create_player();
+        player_ship_component = player_ship.get('ship_brain');
 
     } //assets_loaded
 
@@ -55,6 +68,19 @@ class PlayState extends State {
 
         if(player_ship != null) {
             Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
+            if(player_ship_component.ship_velocity.y < 0) {
+
+            }
+            if(player_ship_component.ship_velocity.y > 0) {
+
+            }
+            if(player_ship_component.ship_velocity.x < 0) {
+
+            }
+            if(player_ship_component.ship_velocity.x > 0) {
+
+            }
+            
         }
 
     } //update
@@ -71,24 +97,44 @@ class PlayState extends State {
 
     } //create_player
 
-    function create_stars(_number_of_stars:Int, _in_sector:Vector) {
+    function create_stars(_number_of_stars:Int) {
 
-        var stars : Array<Sprite> = [];
-        Luxe.utils.random.initial = 42;
-        for(i in 0...100) {
+        for(i in 0..._number_of_stars) {
             var star = new Sprite({
                 name : 'star',
                 name_unique : true,
                 texture : Luxe.resources.texture('assets/star.png'),
-                pos : new Vector(Luxe.utils.random.int(0, Luxe.screen.w), Luxe.utils.random.int(0, Luxe.screen.h)),
                 depth : -1
             });
         stars.push(star);
         } //for loop
 
-        //todo: define unique sectors based on screen size and position, fill grid of 9 around player. add more as player moves
-        //todo: cleanup far away stars
-
     } //create_stars
+
+    function place_stars_in_sector(_number_of_stars:Int, _sector_x:Int, _sector_y:Int) {
+
+        Luxe.utils.random.initial = 42 + _sector_x + _sector_y;
+        for(i in 0..._number_of_stars) {
+            stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
+            current_star++;
+            if(current_star > stars.length - 1) current_star = 0;
+        } //for loop
+
+    } //place_stars_in_sector
+
+    //todo: maybe work on generating a cloud of stars that follows the player around
+    // and when a star moves off camera+some, just move it to the front/moving edge
+    // ...either that, or the sector of stars idea (better, but much more complex)
+    //todo: generate more stars as camera moves
+    function create_more_stars() {
+
+
+    } //create_more_stars
+
+    //todo: cleanup far away stars
+    function clean_up_stars() {
+
+
+    } //clean_up_stars
 
 } //PlayState
