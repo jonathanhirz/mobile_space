@@ -22,7 +22,7 @@ class PlayState extends State {
 
     override function init() {
 
-        // Luxe.camera.zoom = 0.2;
+        Luxe.camera.zoom = 0.2;
 
         var parcel = new Parcel({
             textures : [
@@ -44,7 +44,7 @@ class PlayState extends State {
     function assets_loaded(_) {
 
         // generate pool of stars
-        create_stars(1500);
+        create_stars(1000);
         // place the initial 9 sectors of stars around player's initial position
         for(col in -1...2) {
             for(row in -1...2) {
@@ -72,34 +72,42 @@ class PlayState extends State {
             Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
 
             var _current_sector = new Vector(Math.floor(player_ship.pos.x / Luxe.screen.w), Math.floor(player_ship.pos.y / Luxe.screen.h));
-            // trace(_current_sector, player_ship_sector);
+            // trace(_current_sector);
 
             //todo: sometimes stars near the player get moved, resulting in empty sectors...
             if(_current_sector.y < player_ship_sector.y) {
                 //draw stars up
-                for(i in -1...2) {
-                    place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y - 1);
+                if(!sector_contains_stars(_current_sector.x, _current_sector.y - 1)){
+                    for(i in -1...2) {
+                        place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y - 1);
+                    }
                 }
                 player_ship_sector = _current_sector;
             }
             if(_current_sector.y > player_ship_sector.y) {
                 //draw stars down
-                for(i in -1...2) {
-                    place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y + 1);
+                if(!sector_contains_stars(_current_sector.x, _current_sector.y + 1)) {
+                    for(i in -1...2) {
+                        place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y + 1);
+                    }
                 }
                 player_ship_sector = _current_sector;
             }
             if(_current_sector.x < player_ship_sector.x) {
                 //draw stars left
-                for(i in -1...2) {
-                    place_stars_in_sector(stars_per_sector, _current_sector.x - 1, _current_sector.y + i);
+                if(!sector_contains_stars(_current_sector.x - 1, _current_sector.y)) {
+                    for(i in -1...2) {
+                        place_stars_in_sector(stars_per_sector, _current_sector.x - 1, _current_sector.y + i);
+                    }
                 }
                 player_ship_sector = _current_sector;
             }
             if(_current_sector.x > player_ship_sector.x) {
                 //draw stars right
-                for(i in -1...2) {
-                    place_stars_in_sector(stars_per_sector, _current_sector.x + 1, _current_sector.y + i);
+                if(!sector_contains_stars(_current_sector.x + 1, _current_sector.y)) {
+                    for(i in -1...2) {
+                        place_stars_in_sector(stars_per_sector, _current_sector.x + 1, _current_sector.y + i);
+                    }
                 }
                 player_ship_sector = _current_sector;
             }
@@ -145,5 +153,18 @@ class PlayState extends State {
         } //for loop
 
     } //place_stars_in_sector
+
+    function sector_contains_stars(_sector_x:Float, _sector_y:Float) : Bool {
+
+        for(star in stars) {
+            if(star.pos.x > (_sector_x * Luxe.screen.w) && star.pos.x < (_sector_x * Luxe.screen.w + Luxe.screen.w)) {
+                if(star.pos.y > (_sector_y * Luxe.screen.h) && star.pos.y < (_sector_y * Luxe.screen.h + Luxe.screen.h)) {
+                    return true;
+                } 
+            }
+        }
+        return false;
+
+    } //sector_contains_stars
 
 } //PlayState
