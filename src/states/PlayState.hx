@@ -13,6 +13,7 @@ class PlayState extends State {
     var player_ship_component : ShipBrain;
     var player_ship_sector : Vector = new Vector(0,0);
     var stars : Array<Sprite> = [];
+    var used_stars : Array<Sprite> = [];
     var current_star : Int = 0;
     var stars_per_sector : Int = 50;
 
@@ -22,7 +23,7 @@ class PlayState extends State {
 
     override function init() {
 
-        Luxe.camera.zoom = 0.2;
+        // Luxe.camera.zoom = 0.2;
 
         var parcel = new Parcel({
             textures : [
@@ -71,10 +72,16 @@ class PlayState extends State {
         if(player_ship != null) {
             Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
 
-            var _current_sector = new Vector(Math.floor(player_ship.pos.x / Luxe.screen.w), Math.floor(player_ship.pos.y / Luxe.screen.h));
+            var _current_sector = new Vector(Math.floor(player_ship.pos.x / Luxe.screen.w), 
+                                             Math.floor(player_ship.pos.y / Luxe.screen.h));
             // trace(_current_sector);
 
             //todo: sometimes stars near the player get moved, resulting in empty sectors...
+            // be clever and make this work
+            // 1) have main pool of stars that are initialy generated
+            // 2) when placing stars, move them from main pool to another pool (placed_stars)
+            // 3) on sector jump, check placed_stars pool for stars in sectors we are leaving, place them back in main pool
+            
             if(_current_sector.y < player_ship_sector.y) {
                 //draw stars up
                 if(!sector_contains_stars(_current_sector.x, _current_sector.y - 1)){
@@ -121,9 +128,10 @@ class PlayState extends State {
             name : 'player_ship',
             texture : Luxe.resources.texture('assets/blue_ship.png'),
             pos : Luxe.screen.mid,
-            depth : 0
+            depth : 1
         });
         player_ship.add(new ShipBrain('ship_brain'));
+        player_ship.add(new ShipExhaust('ship_exhaust'));
 
     } //create_player
 
@@ -146,7 +154,8 @@ class PlayState extends State {
 
         Luxe.utils.random.initial = 42 + _sector_x + _sector_y;
         for(i in 0..._number_of_stars) {
-            stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
+            stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), 
+                                                 (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
             stars[current_star].visible = true;
             current_star++;
             if(current_star > stars.length - 1) current_star = 0;
