@@ -25,7 +25,7 @@ class PlayState extends State {
 
     override function init() {
 
-        // Luxe.camera.zoom = 0.2;
+        Luxe.camera.zoom = 0.75;
 
         var parcel = new Parcel({
             textures : [
@@ -138,40 +138,6 @@ class PlayState extends State {
             depth : 1
         });
         player_ship.add(new ShipBrain('ship_brain'));
-
-        // exhaust 1 sprite
-        var ship_exhaust = new Sprite({
-            name : "ship_exhaust",
-            texture : Luxe.resources.texture('assets/exhaust.png'),
-            size : new Vector(16, 32),
-            rotation_z : 180,
-            pos : new Vector(16, 64),
-            depth : 2
-        });
-        ship_exhaust.parent = player_ship;
-        // exhaust 1 animation
-        var exhaust_anim = Luxe.resources.json('assets/exhaust.json');
-        var ship_exhaust_anim = ship_exhaust.add(new SpriteAnimation({ name:'exhaust' }));
-        ship_exhaust_anim.add_from_json_object(exhaust_anim.asset.json);
-        ship_exhaust_anim.animation = 'fire';
-        ship_exhaust_anim.play();
-
-        // exhaust 2 sprite
-        var ship_exhaust_2 = new Sprite({
-            name : "ship_exhaust_2",
-            texture : Luxe.resources.texture('assets/exhaust.png'),
-            size : new Vector(16, 32),
-            rotation_z : 180,
-            pos : new Vector(48, 64),
-            depth : 2
-        });
-        ship_exhaust_2.parent = player_ship;
-        // exhaust 2 animation
-        var exhaust_anim_2 = Luxe.resources.json('assets/exhaust.json');
-        var ship_exhaust_anim_2 = ship_exhaust_2.add(new SpriteAnimation({ name:'exhaust' }));
-        ship_exhaust_anim_2.add_from_json_object(exhaust_anim.asset.json);
-        ship_exhaust_anim_2.animation = 'fire';
-        ship_exhaust_anim_2.play();
 
     } //create_player
 
