@@ -1,0 +1,8 @@
+{
+    "fire" : {
+        "frame_size" : { "x" : "16", "y" : "32" },
+        "frameset" : ["1-4"],
+        "loop" : "true",
+        "speed" : "30"
+    }
+}

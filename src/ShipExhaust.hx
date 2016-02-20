@@ -26,22 +26,25 @@ class ShipExhaust extends Component {
             particle_image : particle,
             depth : 0,
             gravity : new Vector(0,0),
+            speed : 5.0,
             pos_random : new Vector(0,0),
             start_size : new Vector(16,16),
-            end_size : new Vector(16,16),
+            end_size : new Vector(1,1),
             start_size_random : new Vector(0,0),
-            end_size_random : new Vector(0,0),
+            end_size_random : new Vector(2,2),
             start_color : new Color().rgb(0x7ba4ca),
             end_color : new Color().rgb(0x7ba4ca),
-            emit_time : 0.0001,
-            life : 0.25
+            emit_time : 0.01,
+            life : 0.75
         });
 
     } //init
 
     override function update(dt:Float) {
 
+        exhaust.get('exhaust').direction = ship.rotation_z + 270;
+        trace(exhaust.get('exhaust').emit_count);
 
-    } //Update
+    } //update
 
 } //ShipExhaust
