@@ -25,7 +25,7 @@ class PlayState extends State {
 
     override function init() {
 
-        Luxe.camera.zoom = 0.25;
+        Luxe.camera.zoom = 0.1;
 
         var parcel = new Parcel({
             textures : [
@@ -75,6 +75,9 @@ class PlayState extends State {
 
     override function update(dt:Float) {
 
+        // trace(stars.length);
+        // trace(used_stars.length);
+
         if(player_ship != null) {
             Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
 
@@ -93,6 +96,8 @@ class PlayState extends State {
                 if(!sector_contains_stars(_current_sector.x, _current_sector.y - 1)){
                     for(i in -1...2) {
                         place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y - 1);
+                        // replace_stars_in_main_pool(_current_sector.x + i, _current_sector.y + 1);
+                        // replace_stars_in_main_pool(_current_sector.x + i, _current_sector.y + 1);
                     }
                 }
                 player_ship_sector = _current_sector;
@@ -163,11 +168,25 @@ class PlayState extends State {
             stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), 
                                                  (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
             stars[current_star].visible = true;
+            // used_stars = used_stars.concat(stars.splice(current_star, 1));
             current_star++;
             if(current_star > stars.length - 1) current_star = 0;
         } //for loop
 
     } //place_stars_in_sector
+
+    function replace_stars_in_main_pool(_sector_x:Float, _sector_y:Float) {
+
+        for(star in used_stars) {
+            if(star.pos.x > (_sector_x * Luxe.screen.w) && star.pos.x < (_sector_x * Luxe.screen.w + Luxe.screen.w)) {
+                if(star.pos.y > (_sector_y * Luxe.screen.h) && star.pos.y < (_sector_y * Luxe.screen.h + Luxe.screen.h)) {
+                    star.visible = false;
+                    stars = stars.concat(used_stars.splice(used_stars.indexOf(star), 1));
+                } 
+            }
+        }
+
+    } //replace_stars_in_main_pool
 
     function sector_contains_stars(_sector_x:Float, _sector_y:Float) : Bool {
 
