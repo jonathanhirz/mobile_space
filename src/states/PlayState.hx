@@ -16,7 +16,7 @@ class PlayState extends State {
     var player_ship : Sprite;
     var player_ship_component : ShipBrain;
     var star_background : Sprite;
-    var parallax_amount : Int = 1;
+    var star_background_back : Sprite;
 
     public function new( _name:String ) {
         super({ name:_name });
@@ -24,13 +24,14 @@ class PlayState extends State {
 
     override function init() {
 
-        // Luxe.camera.zoom = 0.5;
+        Luxe.camera.zoom = 0.5;
 
         var parcel = new Parcel({
             textures : [
                 { id: 'assets/blue_ship.png' },
                 { id: 'assets/exhaust.png' },
-                { id: 'assets/star_background.png' }
+                { id: 'assets/star_background.png' },
+                { id: 'assets/star_background_back.png' }
              ],
              jsons : [
                 { id : 'assets/exhaust.json'}
@@ -51,7 +52,6 @@ class PlayState extends State {
 
         create_background();
         create_player();
-        star_background.pos = player_ship.pos;
         player_ship_component = player_ship.get('ship_brain');
 
     } //assets_loaded
@@ -69,17 +69,13 @@ class PlayState extends State {
     override function update(dt:Float) {
 
         if(player_ship != null) {
-            Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
-            star_background.uv.x = player_ship.pos.x / parallax_amount;
-            star_background.uv.y = player_ship.pos.y / parallax_amount;
+            Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 1);
+            update_background();
         }
 
     } //update
 
     function create_background() {
-
-        //todo: larger star background texture. more varied stars
-        //todo: multiple background layers, for parallax
 
         star_background = new Sprite({
             name : 'star_background',
@@ -89,7 +85,26 @@ class PlayState extends State {
         });
         star_background.texture.clamp_s = star_background.texture.clamp_t = ClampType.repeat;
 
+        star_background_back = new Sprite({
+            name : 'star_background_back',
+            texture : Luxe.resources.texture('assets/star_background_back.png'),
+            pos : new Vector(0,0),
+            depth : 0
+        });
+        star_background_back.texture.clamp_s = star_background_back.texture.clamp_t = ClampType.repeat;
+
     } //create_background
+
+    function update_background() {
+
+        star_background.pos = player_ship.pos.clone();
+            star_background_back.pos = player_ship.pos.clone();
+            star_background.uv.x = player_ship.pos.x / 2;
+            star_background.uv.y = player_ship.pos.y / 2;
+            star_background_back.uv.x = player_ship.pos.x / 4;
+            star_background_back.uv.y = player_ship.pos.y / 4;
+
+    } //update_background
 
     function create_player() {
 
