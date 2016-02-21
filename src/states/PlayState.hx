@@ -53,6 +53,23 @@ class PlayState extends State {
         create_background();
         create_player();
         player_ship_component = player_ship.get('ship_brain');
+        
+
+        var random_sprite = new Sprite({
+            size : new Vector(64,64),
+            color : new Color().rgb(0x2fca21),
+            pos : new Vector(-100,120)
+        });
+        var random_sprite_2 = new Sprite({
+            size : new Vector(64,64),
+            color : new Color().rgb(0xca021e),
+            pos : new Vector(80,-70)
+        });
+        var random_sprite_3 = new Sprite({
+            size : new Vector(64,64),
+            color : new Color().rgb(0x2138ca),
+            pos : new Vector(150,170)
+        });
 
     } //assets_loaded
 
@@ -81,7 +98,7 @@ class PlayState extends State {
             name : 'star_background',
             texture : Luxe.resources.texture('assets/star_background.png'),
             pos : new Vector(0,0),
-            depth : 0
+            depth : -1
         });
         star_background.texture.clamp_s = star_background.texture.clamp_t = ClampType.repeat;
 
@@ -89,7 +106,7 @@ class PlayState extends State {
             name : 'star_background_back',
             texture : Luxe.resources.texture('assets/star_background_back.png'),
             pos : new Vector(0,0),
-            depth : 0
+            depth : -2
         });
         star_background_back.texture.clamp_s = star_background_back.texture.clamp_t = ClampType.repeat;
 
@@ -98,11 +115,11 @@ class PlayState extends State {
     function update_background() {
 
         star_background.pos = player_ship.pos.clone();
-            star_background_back.pos = player_ship.pos.clone();
-            star_background.uv.x = player_ship.pos.x / 2;
-            star_background.uv.y = player_ship.pos.y / 2;
-            star_background_back.uv.x = player_ship.pos.x / 4;
-            star_background_back.uv.y = player_ship.pos.y / 4;
+        star_background_back.pos = player_ship.pos.clone();
+        star_background.uv.x = player_ship.pos.x / 2;
+        star_background.uv.y = player_ship.pos.y / 2;
+        star_background_back.uv.x = player_ship.pos.x / 4;
+        star_background_back.uv.y = player_ship.pos.y / 4;
 
     } //update_background
 
