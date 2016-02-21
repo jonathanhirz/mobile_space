@@ -9,15 +9,14 @@ import luxe.components.sprite.SpriteAnimation;
 import luxe.Parcel;
 import luxe.ParcelProgress;
 
+import phoenix.Texture.ClampType;
+
 class PlayState extends State {
 
     var player_ship : Sprite;
     var player_ship_component : ShipBrain;
-    var player_ship_sector : Vector = new Vector(0,0);
-    var stars : Array<Sprite> = [];
-    var used_stars : Array<Sprite> = [];
-    var current_star : Int = 0;
-    var stars_per_sector : Int = 50;
+    var star_background : Sprite;
+    var parallax_amount : Int = 1;
 
     public function new( _name:String ) {
         super({ name:_name });
@@ -25,13 +24,13 @@ class PlayState extends State {
 
     override function init() {
 
-        Luxe.camera.zoom = 0.1;
+        // Luxe.camera.zoom = 0.5;
 
         var parcel = new Parcel({
             textures : [
                 { id: 'assets/blue_ship.png' },
-                { id: 'assets/star.png' },
-                { id: 'assets/exhaust.png' }
+                { id: 'assets/exhaust.png' },
+                { id: 'assets/star_background.png' }
              ],
              jsons : [
                 { id : 'assets/exhaust.json'}
@@ -50,15 +49,9 @@ class PlayState extends State {
 
     function assets_loaded(_) {
 
-        // generate pool of stars
-        create_stars(1000);
-        // place the initial 9 sectors of stars around player's initial position
-        for(col in -1...2) {
-            for(row in -1...2) {
-                place_stars_in_sector(stars_per_sector, col, row);
-            }
-        }
+        create_background();
         create_player();
+        star_background.pos = player_ship.pos;
         player_ship_component = player_ship.get('ship_brain');
 
     } //assets_loaded
@@ -75,63 +68,28 @@ class PlayState extends State {
 
     override function update(dt:Float) {
 
-        // trace(stars.length);
-        // trace(used_stars.length);
-
         if(player_ship != null) {
             Luxe.camera.center.weighted_average_xy(player_ship.pos.x, player_ship.pos.y, 10);
-
-            var _current_sector = new Vector(Math.floor(player_ship.pos.x / Luxe.screen.w), 
-                                             Math.floor(player_ship.pos.y / Luxe.screen.h));
-            // trace(_current_sector);
-
-            //todo: sometimes stars near the player get moved, resulting in empty sectors...
-            // be clever and make this work
-            // 1) have main pool of stars that are initialy generated
-            // 2) when placing stars, move them from main pool to another pool (placed_stars)
-            // 3) on sector jump, check placed_stars pool for stars in sectors we are leaving, place them back in main pool
-            
-            if(_current_sector.y < player_ship_sector.y) {
-                //draw stars up
-                if(!sector_contains_stars(_current_sector.x, _current_sector.y - 1)){
-                    for(i in -1...2) {
-                        place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y - 1);
-                        // replace_stars_in_main_pool(_current_sector.x + i, _current_sector.y + 1);
-                        // replace_stars_in_main_pool(_current_sector.x + i, _current_sector.y + 1);
-                    }
-                }
-                player_ship_sector = _current_sector;
-            }
-            if(_current_sector.y > player_ship_sector.y) {
-                //draw stars down
-                if(!sector_contains_stars(_current_sector.x, _current_sector.y + 1)) {
-                    for(i in -1...2) {
-                        place_stars_in_sector(stars_per_sector, _current_sector.x + i, _current_sector.y + 1);
-                    }
-                }
-                player_ship_sector = _current_sector;
-            }
-            if(_current_sector.x < player_ship_sector.x) {
-                //draw stars left
-                if(!sector_contains_stars(_current_sector.x - 1, _current_sector.y)) {
-                    for(i in -1...2) {
-                        place_stars_in_sector(stars_per_sector, _current_sector.x - 1, _current_sector.y + i);
-                    }
-                }
-                player_ship_sector = _current_sector;
-            }
-            if(_current_sector.x > player_ship_sector.x) {
-                //draw stars right
-                if(!sector_contains_stars(_current_sector.x + 1, _current_sector.y)) {
-                    for(i in -1...2) {
-                        place_stars_in_sector(stars_per_sector, _current_sector.x + 1, _current_sector.y + i);
-                    }
-                }
-                player_ship_sector = _current_sector;
-            }
+            star_background.uv.x = player_ship.pos.x / parallax_amount;
+            star_background.uv.y = player_ship.pos.y / parallax_amount;
         }
 
     } //update
+
+    function create_background() {
+
+        //todo: larger star background texture. more varied stars
+        //todo: multiple background layers, for parallax
+
+        star_background = new Sprite({
+            name : 'star_background',
+            texture : Luxe.resources.texture('assets/star_background.png'),
+            pos : new Vector(0,0),
+            depth : 0
+        });
+        star_background.texture.clamp_s = star_background.texture.clamp_t = ClampType.repeat;
+
+    } //create_background
 
     function create_player() {
 
@@ -139,66 +97,11 @@ class PlayState extends State {
         player_ship = new Sprite({
             name : 'player_ship',
             texture : Luxe.resources.texture('assets/blue_ship.png'),
-            pos : Luxe.screen.mid,
+            pos : new Vector(0,0),
             depth : 1
         });
         player_ship.add(new ShipBrain('ship_brain'));
 
     } //create_player
-
-    function create_stars(_number_of_stars:Int) {
-
-        for(i in 0..._number_of_stars) {
-            var star = new Sprite({
-                name : 'star',
-                name_unique : true,
-                texture : Luxe.resources.texture('assets/star.png'),
-                depth : -1,
-                visible : false
-            });
-        stars.push(star);
-        } //for loop
-
-    } //create_stars
-
-    function place_stars_in_sector(_number_of_stars:Int, _sector_x:Float, _sector_y:Float) {
-
-        Luxe.utils.random.initial = 42 + _sector_x * 2 + _sector_y * 3;
-        for(i in 0..._number_of_stars) {
-            stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), 
-                                                 (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
-            stars[current_star].visible = true;
-            // used_stars = used_stars.concat(stars.splice(current_star, 1));
-            current_star++;
-            if(current_star > stars.length - 1) current_star = 0;
-        } //for loop
-
-    } //place_stars_in_sector
-
-    function replace_stars_in_main_pool(_sector_x:Float, _sector_y:Float) {
-
-        for(star in used_stars) {
-            if(star.pos.x > (_sector_x * Luxe.screen.w) && star.pos.x < (_sector_x * Luxe.screen.w + Luxe.screen.w)) {
-                if(star.pos.y > (_sector_y * Luxe.screen.h) && star.pos.y < (_sector_y * Luxe.screen.h + Luxe.screen.h)) {
-                    star.visible = false;
-                    stars = stars.concat(used_stars.splice(used_stars.indexOf(star), 1));
-                } 
-            }
-        }
-
-    } //replace_stars_in_main_pool
-
-    function sector_contains_stars(_sector_x:Float, _sector_y:Float) : Bool {
-
-        for(star in stars) {
-            if(star.pos.x > (_sector_x * Luxe.screen.w) && star.pos.x < (_sector_x * Luxe.screen.w + Luxe.screen.w)) {
-                if(star.pos.y > (_sector_y * Luxe.screen.h) && star.pos.y < (_sector_y * Luxe.screen.h + Luxe.screen.h)) {
-                    return true;
-                } 
-            }
-        }
-        return false;
-
-    } //sector_contains_stars
 
 } //PlayState
