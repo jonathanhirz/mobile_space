@@ -91,7 +91,8 @@ class ShipBrain extends Component {
             if(ship_exhaust_anim.animation != 'fire') {
                 ship_exhaust_anim.animation = 'fire';
                 ship_exhaust_anim_2.animation = 'fire';
-            }        }
+            }
+        }
         if(Luxe.input.inputreleased('down')) {
             ship_acceleration.y = 0;
             ship_exhaust_anim.animation = 'idle';
@@ -102,7 +103,8 @@ class ShipBrain extends Component {
             if(ship_exhaust_anim.animation != 'fire') {
                 ship_exhaust_anim.animation = 'fire';
                 ship_exhaust_anim_2.animation = 'fire';
-            }        }
+            }
+        }
         if(Luxe.input.inputreleased('left')) {
             ship_acceleration.x = 0;
             ship_exhaust_anim.animation = 'idle';
@@ -113,7 +115,8 @@ class ShipBrain extends Component {
             if(ship_exhaust_anim.animation != 'fire') {
                 ship_exhaust_anim.animation = 'fire';
                 ship_exhaust_anim_2.animation = 'fire';
-            }        }
+            }
+        }
         if(Luxe.input.inputreleased('right')) {
             ship_acceleration.x = 0;
             ship_exhaust_anim.animation = 'idle';

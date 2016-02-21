@@ -8,8 +8,6 @@ class Main extends luxe.Game {
 
     override function config(config:luxe.AppConfig) {
 
-        config.preload.textures.push({ id:'assets/particle.png' });
-
         return config;
 
     } //config

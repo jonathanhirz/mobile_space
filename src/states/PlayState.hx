@@ -25,7 +25,7 @@ class PlayState extends State {
 
     override function init() {
 
-        Luxe.camera.zoom = 0.75;
+        Luxe.camera.zoom = 0.25;
 
         var parcel = new Parcel({
             textures : [
@@ -158,7 +158,7 @@ class PlayState extends State {
 
     function place_stars_in_sector(_number_of_stars:Int, _sector_x:Float, _sector_y:Float) {
 
-        Luxe.utils.random.initial = 42 + _sector_x + _sector_y;
+        Luxe.utils.random.initial = 42 + _sector_x * 2 + _sector_y * 3;
         for(i in 0..._number_of_stars) {
             stars[current_star].pos = new Vector((_sector_x * Luxe.screen.w) + (Luxe.utils.random.get() * Luxe.screen.w), 
                                                  (_sector_y * Luxe.screen.h) + (Luxe.utils.random.get() * Luxe.screen.h));
