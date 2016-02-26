@@ -24,7 +24,13 @@ class PlayState extends State {
 
     override function init() {
 
+        #if desktop
         Luxe.camera.zoom = 0.5;
+        #end
+
+        #if mobile
+        Luxe.camera.zoom = 1;
+        #end
 
         var parcel = new Parcel({
             textures : [
