@@ -18,9 +18,12 @@ class ShipBrain extends Component {
     var touches : Array<TouchEvent>;
     var movement_touch : TouchEvent;
     var movement_touch_initial_position : Vector = new Vector(0,0);
+    var movement_touch_space : Float = 0.05;
     var fire_touch : TouchEvent;
     var left_side_touched : Bool = false;
     var right_side_touched : Bool = false;
+
+    var movement_touch_icon : Sprite;
 
     public function new(_name:String) {
         super({ name:_name});
@@ -67,6 +70,16 @@ class ShipBrain extends Component {
         ship_exhaust_anim_2.add_from_json_object(exhaust_anim.asset.json);
         ship_exhaust_anim_2.animation = 'idle';
         ship_exhaust_anim_2.play();
+
+        // movement_touch_icon
+        movement_touch_icon = new Sprite({
+            name : 'movement_touch_icon',
+            texture : Luxe.resources.texture('assets/movement_touch_icon.png'),
+            size : new Vector(64, 64),
+            depth : 1,
+            visible : true
+
+        }); //movement_touch_icon
 
     } //init
 
@@ -124,39 +137,26 @@ class ShipBrain extends Component {
         }
 
         //====TOUCH CONTROLS====
-        //todo: touch controls
+        //todo: have the start touch point drag around with the finger if it gets too far away. this way it isn't hard to find center
         if(touches.length > 0) {
             for(touch in touches) {
                 //do stuff
             }
         }
         if(movement_touch != null) {
-            //todo: draw a movement sprite where touched
-            //todo: use atan2() to get movement vector, add that to position. this is too static
-            if(movement_touch.pos.x > movement_touch_initial_position.x) {
-                ship_acceleration.x = ship_speed;
-                start_exhaust();
-            }
-            if(movement_touch.pos.x < movement_touch_initial_position.x) {
-                ship_acceleration.x = -ship_speed;
-                start_exhaust();
-            }
-            if(movement_touch.pos.y > movement_touch_initial_position.y) {
-                ship_acceleration.y = ship_speed;
-                start_exhaust();
-            }
-            if(movement_touch.pos.y < movement_touch_initial_position.y) {
-                ship_acceleration.y = -ship_speed;
-                start_exhaust();
-            }
+            //todo: touch controls need tweaking. need to be able to move in cardinal directions easily
+            var touch_y = movement_touch.pos.y - movement_touch_initial_position.y;
+            var touch_x = movement_touch.pos.x - movement_touch_initial_position.x;
+            var angle = Math.atan2(touch_y, touch_x);
+            ship_acceleration.x = ship_speed * Math.cos(angle);
+            ship_acceleration.y = ship_speed * Math.sin(angle);
+            start_exhaust();
+            if(!left_side_touched) {
+                ship_acceleration.x = 0;
+                ship_acceleration.y = 0;
+                stop_exhaust();
+            } //stop ship
         }
-
-        if(!left_side_touched) {
-            ship_acceleration.x = 0;
-            ship_acceleration.y = 0;
-            stop_exhaust();
-        } //stop ship
-
 
     } //update
 
@@ -195,7 +195,7 @@ class ShipBrain extends Component {
 
         for(touch in touches) {
             if(touch.touch_id == e.touch_id) {
-                touch.pos = e.pos;
+                touch.pos.set_xy(e.pos.x, e.pos.y);
             }
         }
 

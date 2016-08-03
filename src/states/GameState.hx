@@ -11,7 +11,7 @@ import luxe.ParcelProgress;
 
 import phoenix.Texture.ClampType;
 
-class PlayState extends State {
+class GameState extends State {
 
     var player_ship : Sprite;
     var player_ship_component : ShipBrain;
@@ -34,10 +34,11 @@ class PlayState extends State {
 
         var parcel = new Parcel({
             textures : [
-                { id: 'assets/blue_ship.png' },
-                { id: 'assets/exhaust.png' },
-                { id: 'assets/star_background.png' },
-                { id: 'assets/star_background_back.png' }
+                { id : 'assets/blue_ship.png' },
+                { id : 'assets/exhaust.png' },
+                { id : 'assets/star_background.png' },
+                { id : 'assets/star_background_back.png' },
+                { id : 'assets/movement_touch_icon.png' }
              ],
              jsons : [
                 { id : 'assets/exhaust.json'}
@@ -136,10 +137,10 @@ class PlayState extends State {
             name : 'player_ship',
             texture : Luxe.resources.texture('assets/blue_ship.png'),
             pos : new Vector(0,0),
-            depth : 1
+            depth : 2
         });
         player_ship.add(new ShipBrain('ship_brain'));
 
     } //create_player
 
-} //PlayState
+} //GameState

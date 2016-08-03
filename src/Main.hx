@@ -1,12 +1,15 @@
 import states.*;
 import luxe.Input;
 import luxe.States;
+import luxe.GameConfig;
 
 class Main extends luxe.Game {
 
+    //todo: maybe this can be like a space mining game. shoot asteroids to gather materials, sell for money/parts/upgrade materials. take on other ships, fight fight fight!
+
     var machine : States;
 
-    override function config(config:luxe.AppConfig) {
+    override function config(config:luxe.GameConfig) {
 
         return config;
 
@@ -19,9 +22,9 @@ class Main extends luxe.Game {
         connect_input();
         machine = new States({ name:'statemachine' });
         machine.add(new MenuState('menu_state'));
-        machine.add(new PlayState('play_state'));
+        machine.add(new GameState('game_state'));
         Luxe.on(init, function(_) {
-            machine.set('play_state');
+            machine.set('game_state');
         });
 
     } //ready
