@@ -58,6 +58,7 @@ class GameState extends State {
     function assets_loaded(_) {
 
         create_background();
+        //todo: split out entities/components in the new way
         create_player();
         player_ship_component = player_ship.get('ship_brain');
         

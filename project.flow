@@ -1,22 +1,4 @@
 {
-  luxe:{
-    window: {
-      width:960,
-      height:544,
-      title:'mobile_space',
-      fullscreen:false,
-      resizable:true,
-      if : {
-        ios : {
-          borderless:true
-        },
-        "!ios": {
-          borderless:false
-        }
-      }
-    }
-  },
-
   project : {
     name : 'mobile_space',
     version : '0.0.1',
@@ -30,10 +12,14 @@
     build : {
       dependencies : {
         luxe : '*',
+      },
+      hxcpp : {
+        flags : ['-nocolor']
       }
     },
 
     files : {
+      config : 'config.json',
       assets : 'assets/'
     }
   }

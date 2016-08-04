@@ -11,6 +11,17 @@ class Main extends luxe.Game {
 
     override function config(config:luxe.GameConfig) {
 
+        if(config.user.window != null) {
+            if(config.user.window.width != null) {
+                config.window.width = Std.int(config.user.window.width);
+            }
+            if(config.user.window.height != null) {
+                config.window.height = Std.int(config.user.window.height);
+            }
+        }
+
+        config.window.title = config.user.window.title;
+
         return config;
 
     } //config
