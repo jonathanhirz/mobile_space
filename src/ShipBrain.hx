@@ -37,6 +37,7 @@ class ShipBrain extends Component {
 
         //todo: animate exhaust powering down by shrinking
         //todo: make the exhaust a single animation/sprite
+        //todo: ship should automatically fire when close to asteroids, enemies. simplify for mobile
         // exhaust 1 sprite
         var ship_exhaust = new Sprite({
             name : "ship_exhaust",
@@ -162,32 +163,48 @@ class ShipBrain extends Component {
 
     override function ontouchdown(e:TouchEvent) {
 
+        // portrait, one button controls
         touches.push(e);
-        if(e.pos.x < 0.5 && !left_side_touched) {
-            movement_touch = e;
-            movement_touch_initial_position = movement_touch.pos.clone();
-            left_side_touched = true;
-        }
-        if(e.pos.x > 0.5 && !right_side_touched) {
-            fire_touch = e;
-            right_side_touched = true;
-        }
+        movement_touch = e;
+        movement_touch_initial_position = movement_touch.pos.clone();
+        left_side_touched = true;
+
+        // // landscape, two button controls
+        // touches.push(e);
+        // if(e.pos.x < 0.5 && !left_side_touched) {
+        //     movement_touch = e;
+        //     movement_touch_initial_position = movement_touch.pos.clone();
+        //     left_side_touched = true;
+        // }
+        // if(e.pos.x > 0.5 && !right_side_touched) {
+        //     fire_touch = e;
+        //     right_side_touched = true;
+        // }
 
     } //ontouchdown
 
     override function ontouchup(e:TouchEvent) {
 
+        // portrait, one button controls
         for(touch in touches) {
             if(touch.touch_id == e.touch_id) {
-                if(left_side_touched && touch.touch_id == movement_touch.touch_id) {
-                    left_side_touched = false;
-                }
-                if(right_side_touched && touch.touch_id == fire_touch.touch_id) {
-                    right_side_touched = false;
-                }
                 touches.remove(touch);
+                left_side_touched = false;
             }
         }
+
+        // // landscape, two button controls
+        // for(touch in touches) {
+        //     if(touch.touch_id == e.touch_id) {
+        //         if(left_side_touched && touch.touch_id == movement_touch.touch_id) {
+        //             left_side_touched = false;
+        //         }
+        //         if(right_side_touched && touch.touch_id == fire_touch.touch_id) {
+        //             right_side_touched = false;
+        //         }
+        //         touches.remove(touch);
+        //     }
+        // }
 
     } //ontouchup
 
